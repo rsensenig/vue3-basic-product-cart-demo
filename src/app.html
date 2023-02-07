@@ -88,6 +88,7 @@
         :toggle="toggleSidebar"
         :cart="cart"
         :inventory="inventory"
+        :remove="removeItem"
       />
 
       <footer>
@@ -110,10 +111,13 @@
             if(!this.cart[name]) this.cart[name] = 0;
             // receive name and number of item
             this.cart[name] += this.inventory[index].quantity;
-            console.log(this.cart);
+            this.inventory[index].quantity = 0;
           },
           toggleSidebar() {
             this.showSidebar = !this.showSidebar;
+          },
+          removeItem(name) {
+            delete this.cart[name];
           }
         },
         async mounted() {
@@ -124,10 +128,7 @@
       })
 
       app.component('sidebar', {
-        props: ['toggle', 'cart', 'inventory'],
-        computed: {
-          
-        },
+        props: ['toggle', 'cart', 'inventory', 'remove'],
         methods: {
           getPrice(name) {
             const product = this.inventory.find((p) => {
@@ -174,9 +175,9 @@
                   <td>{{ key }}</td>
                   <td>\${{ getPrice(key) }}</td>
                   <td class="center">{{ quantity }}</td>
-                  <td>\${{ quantity * getPrice(key) }}</td>
+                  <td>\${{ (quantity * getPrice(key)).toFixed(2) }}</td>
                   <td class="center">
-                    <button class="btn btn-light cart-remove">
+                    <button @click="remove(key)" class="btn btn-light cart-remove">
                       &times;
                     </button>
                   </td>
